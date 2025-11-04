@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
+import { AuthButton } from "./auth-button"
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -26,9 +27,7 @@ export default function Header() {
           <Link href="#faq" className="text-foreground hover:text-primary transition">
             FAQ
           </Link>
-          <button className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-medium hover:opacity-90 transition">
-            Get Started
-          </button>
+          <AuthButton />
         </div>
 
         {/* Mobile Menu Button */}
@@ -49,9 +48,7 @@ export default function Header() {
               <Link href="#faq" className="text-foreground hover:text-primary transition">
                 FAQ
               </Link>
-              <button className="bg-primary text-primary-foreground px-6 py-2 rounded-full font-medium hover:opacity-90 transition w-full">
-                Get Started
-              </button>
+              <AuthButton />
             </div>
           </div>
         )}

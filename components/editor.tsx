@@ -79,7 +79,16 @@ export default function Editor() {
       }
 
       if (data.type === 'image' && data.imageUrl) {
-        setGeneratedImage(data.imageUrl)
+        console.log('Received image URL:', data.imageUrl)
+        console.log('Image URL type:', typeof data.imageUrl)
+
+        // Handle different image URL formats
+        let imageUrl = data.imageUrl
+        if (typeof imageUrl === 'object' && imageUrl.image_url && imageUrl.image_url.url) {
+          imageUrl = imageUrl.image_url.url
+        }
+
+        setGeneratedImage(imageUrl)
         setGeneratedResult(data.result || 'Image generated successfully!')
       } else {
         setGeneratedResult(data.result)

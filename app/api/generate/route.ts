@@ -50,33 +50,47 @@ export async function POST(request: NextRequest) {
       choices: completion.choices?.length,
       firstChoice: completion.choices?.[0],
       messageContent: completion.choices?.[0]?.message?.content,
-      messageImages: completion.choices?.[0]?.message?.images?.length
+      messageImages: completion.choices?.[0]?.message?.images,
     })
 
-    const message = completion.choices[0].message
+    const message = completion.choices[0]?.message
+
+    if (!message) {
+      throw new Error('No message received from API')
+    }
 
     // Check if there are images in the response
-    if (message.images && message.images.length > 0) {
-      const imageUrl = message.images[0].image_url.url
-      console.log('Generated image URL type:', typeof imageUrl)
-      console.log('Generated image URL length:', imageUrl.length)
+    if (message.images && Array.isArray(message.images) && message.images.length > 0) {
+      console.log('Found images in response:', message.images.length)
+      const firstImage = message.images[0]
+      console.log('First image object:', firstImage)
+
+      // Extract the actual image URL from the object structure
+      let imageUrl = firstImage
+      if (typeof firstImage === 'object' && firstImage.image_url && firstImage.image_url.url) {
+        imageUrl = firstImage.image_url.url
+      } else if (typeof firstImage === 'object' && firstImage.url) {
+        imageUrl = firstImage.url
+      }
+
+      console.log('Extracted image URL:', typeof imageUrl === 'string' ? imageUrl.substring(0, 100) + '...' : imageUrl)
 
       return NextResponse.json({
-        result: message.content,
+        result: 'Image generated successfully!',
         imageUrl: imageUrl,
         type: 'image'
       })
-    } else {
-      // Fallback to text content
-      const result = message.content
-      console.log('Generated result type:', typeof result)
-      console.log('Generated result:', result)
-
-      return NextResponse.json({
-        result,
-        type: 'text'
-      })
     }
+
+    // Fallback to text content
+    const result = message.content
+    console.log('Generated result type:', typeof result)
+    console.log('Generated result:', result)
+
+    return NextResponse.json({
+      result,
+      type: 'text'
+    })
   } catch (error) {
     console.error('Error generating response:', error)
     return NextResponse.json(
